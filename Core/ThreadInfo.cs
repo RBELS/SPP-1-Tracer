@@ -1,16 +1,14 @@
-namespace Core.ThreadInfo;
-
-using MethodInfo;
+namespace Core;
 
 public class ThreadInfo
 {
     private readonly Stack<MethodInfo> _methodInfoStack = new Stack<MethodInfo>();
-    private readonly List<MethodInfo> _rootMethodInfoList = new List<MethodInfo>();
-    private readonly int _threadId;
+    public List<MethodInfo> RootMethodInfoList { get; private set; } = new List<MethodInfo>();
+    public int ThreadId { get; private set; }
     
     internal ThreadInfo(int threadId)
     {
-        _threadId = threadId;
+        ThreadId = threadId;
     }
 
     public void PushMethodInfo(MethodInfo methodInfo)
@@ -31,7 +29,7 @@ public class ThreadInfo
         }
         else
         {
-            _rootMethodInfoList.Add(methodInfo);
+            RootMethodInfoList.Add(methodInfo);
         }
     }
 }

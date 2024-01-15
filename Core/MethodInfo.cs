@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Reflection;
 
-namespace Core.MethodInfo;
+namespace Core;
 
 public class MethodInfo
 {
@@ -21,5 +21,10 @@ public class MethodInfo
     public void EndMethodInvocation()
     {
         _stopwatch.Stop();
+    }
+
+    public int GetDuration()
+    {
+        return _stopwatch.Elapsed.Milliseconds;
     }
 }

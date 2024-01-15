@@ -3,9 +3,6 @@ using System.Reflection;
 
 namespace Core.Tracer;
 
-using ThreadInfo;
-using MethodInfo;
-
 public class Tracer : ITracer
 {
     private readonly IDictionary<int, ThreadInfo> _threadInfoDict = new Dictionary<int, ThreadInfo>();
@@ -47,6 +44,6 @@ public class Tracer : ITracer
     public TraceResult GetTraceResult()
     {
         Console.WriteLine("Called GetTraceResult");
-        return new TraceResult();
+        return new TraceResult(_threadInfoDict);
     }
 }
