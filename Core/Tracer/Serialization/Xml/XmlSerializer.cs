@@ -1,3 +1,5 @@
+using System.Xml;
+
 namespace Core.Tracer.Serialization.Xml;
 
 public class XmlSerializer : ISerializer
@@ -7,8 +9,17 @@ public class XmlSerializer : ISerializer
         var xmlSerializer = new System.Xml.Serialization.XmlSerializer(typeof(XmlTraceResult));
         using (var stringWriter = new StringWriter())
         {
-            xmlSerializer.Serialize(stringWriter, new XmlTraceResult(traceResult));
-            return stringWriter.ToString();
+            var settings = new XmlWriterSettings()
+            {
+                OmitXmlDeclaration = true,
+                Indent = true
+            };
+
+            using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
+            {
+                xmlSerializer.Serialize(xmlWriter, new XmlTraceResult(traceResult));
+                return stringWriter.ToString();
+            }
         }
     }
 }

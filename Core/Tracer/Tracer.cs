@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -5,29 +6,18 @@ namespace Core.Tracer;
 
 public class Tracer : ITracer
 {
-    private readonly IDictionary<int, ThreadInfo> _threadInfoDict = new Dictionary<int, ThreadInfo>();
+    private readonly ConcurrentDictionary<int, ThreadInfo> _threadInfoDict = new ConcurrentDictionary<int, ThreadInfo>();
     
     public void StartTrace()
     {
         int threadId = Environment.CurrentManagedThreadId;
-        ThreadInfo threadInfo;
-        if (_threadInfoDict.ContainsKey(threadId))
-        {
-            threadInfo = _threadInfoDict[threadId];
-        }
-        else
-        {
-            threadInfo = new ThreadInfo(threadId);
-            _threadInfoDict.Add(threadId, threadInfo);
-        }
+        ThreadInfo threadInfo = _threadInfoDict.GetOrAdd(threadId, new ThreadInfo(threadId));
 
         StackTrace stackTrace = new StackTrace();
         MethodBase methodBase = stackTrace.GetFrame(1).GetMethod();
         MethodInfo methodInfo = new MethodInfo(methodBase);
         
         threadInfo.PushMethodInfo(methodInfo);
-        
-        Console.WriteLine("Called StartTrace");
     }
 
     public void StopTrace()
@@ -37,13 +27,10 @@ public class Tracer : ITracer
         MethodInfo methodInfo = threadInfo.PopMethodInfo();
         methodInfo.EndMethodInvocation();
         threadInfo.AddInnerMethod(methodInfo);
-        
-        Console.WriteLine("Called StopTrace");
     }
 
     public TraceResult GetTraceResult()
     {
-        Console.WriteLine("Called GetTraceResult");
         return new TraceResult(_threadInfoDict);
     }
 }
